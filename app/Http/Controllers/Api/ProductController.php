@@ -25,9 +25,40 @@ class ProductController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(){
+    public function index()
+    {
        $products =  $this->product->all();
 
        return response()->json($products);
+    }
+
+    public function save(Request $request)
+    {
+        $data = $request->all();
+        $product = $this->product->create($data);
+        return response()->json($product);
+    }
+
+    public function show($id)
+    {
+        $product = $this->product->find($id);
+        return response()->json($product);
+    }
+
+    public function update(Request $request)
+    {
+        $data = $request->all();
+        $product = $this->product->find($data['id']);
+        $product->update($data);
+
+        return response()->json($product);
+    }
+
+    public function delete($id)
+    {
+        $product = $this->product->find($id);
+        $product->delete();
+
+        return response()->json(['data' => ['message' => 'Produto removido com sucesso!']]);
     }
 }

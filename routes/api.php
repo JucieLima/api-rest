@@ -20,4 +20,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 //Products Route
-Route::get("/products", [ProductController::class, "index"]);
+Route::prefix("products")->group(function(){
+    Route::get("/", [ProductController::class, "index"]);
+    Route::post("/", [ProductController::class, "save"]);
+    Route::get("/{id}", [ProductController::class, "show"]);
+    Route::put("/", [ProductController::class, "update"]);
+    Route::delete("/{id}", [ProductController::class, "delete"]);
+});
+
