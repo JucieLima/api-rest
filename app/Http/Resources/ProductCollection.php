@@ -18,7 +18,7 @@ class ProductCollection extends ResourceCollection
         //        return parent::toArray($request);
         return [
             'data' => $this->collection,
-            'exra' => 'Dado adicional'
+            'extra' => 'Dado adicional'
         ];
     }
 }
