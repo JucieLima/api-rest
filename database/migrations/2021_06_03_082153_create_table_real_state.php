@@ -15,6 +15,7 @@ class CreateTableRealState extends Migration
     {
         Schema::create('real_state', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
 
             $table->string('title');
             $table->string('description');
@@ -27,6 +28,8 @@ class CreateTableRealState extends Migration
             $table->string('slug');
 
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
