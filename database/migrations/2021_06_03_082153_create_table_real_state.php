@@ -15,6 +15,17 @@ class CreateTableRealState extends Migration
     {
         Schema::create('real_state', function (Blueprint $table) {
             $table->id();
+
+            $table->string('title');
+            $table->string('description');
+            $table->text('content');
+            $table->float('price', 10, 2);
+            $table->integer('bathrooms');
+            $table->integer('bedrooms');
+            $table->float('property_area');
+            $table->float('total_property_area');
+            $table->string('slug');
+
             $table->timestamps();
         });
     }
