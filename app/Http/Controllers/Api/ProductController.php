@@ -29,11 +29,23 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products =  $this->product;
+        $products = $this->product;
 
-        if($request->has('fields')){
+
+        //Filtragem de campos
+        if ($request->has('fields')) {
             $fields = $request->get('fields');
-            $products = $products->selectRaw($fields);
+            $expressions = $products->selectRaw($fields);
+
+            foreach ($expressions as $expression){
+                $filter = explode(':', $expression);
+                $products = $products->where($filter[0], $filter[1], $filter[2]);
+            }
+
+        }
+        //Condições de filtragem
+        if ($request->has("conditions")) {
+            $conditions = explode(';', $request->get('conditions'));
         }
 
 //       return response()->json($products);
