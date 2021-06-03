@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Repository\ProductRepository;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -29,27 +30,22 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+
         $products = $this->product;
+        $productRepository = new ProductRepository($products);
 
-
-        //Filtragem de campos
-        if ($request->has('fields')) {
-            $fields = $request->get('fields');
-            $expressions = $products->selectRaw($fields);
-
-            foreach ($expressions as $expression){
-                $filter = explode(':', $expression);
-                $products = $products->where($filter[0], $filter[1], $filter[2]);
-            }
-
-        }
         //Condições de filtragem
         if ($request->has("conditions")) {
-            $conditions = explode(';', $request->get('conditions'));
+            $productRepository->selectConditions($request->get('conditions'));
         }
 
+        if ($request->has('fields')) {
+            $productRepository->selectFilter($request->get('fields'));
+        }
+
+
 //       return response()->json($products);
-        return new ProductCollection($products->paginate(10));
+        return new ProductCollection($productRepository->getResult()->paginate(10));
     }
 
 
