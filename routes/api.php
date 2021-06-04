@@ -26,4 +26,5 @@ Route::prefix('v1')->group(function () {
     Route::resource('/real-states', RealStateController::class);
     Route::resource('/users', UserController::class);
     Route::resource('/categories', CategoryController::class);
+    Route::get('/categories/{id}/real-states', [CategoryController::class, 'realStates']);
 });
