@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RealStateController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,4 +24,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
     Route::resource('/real-states', RealStateController::class);
+    Route::resource('/users', UserController::class);
+    Route::resource('/categories', CategoryController::class);
 });

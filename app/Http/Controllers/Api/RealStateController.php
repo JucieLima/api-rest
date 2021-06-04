@@ -30,13 +30,13 @@ class RealStateController extends Controller
     {
         $realState = $this->realState->paginate(10);
 
-        return response()->json($realState, 200);
+        return response()->json($realState);
     }
 
     public function show($id)
     {
         try {
-            $realState = $this->realStfsate->findOrFail($id);
+            $realState = $this->realState->findOrFail($id);
 
             $realState->update();
 
@@ -59,7 +59,9 @@ class RealStateController extends Controller
     public function store(RealStateRequest $request)
     {
         $data = $request->all();
+
         try {
+
             $this->realState->create($data);
 
             return response()->json([
