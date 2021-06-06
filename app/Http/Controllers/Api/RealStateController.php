@@ -36,7 +36,7 @@ class RealStateController extends Controller
     public function show($id)
     {
         try {
-            $realState = $this->realState->findOrFail($id);
+            $realState = $this->realState->with('photos')->findOrFail($id);
 
             $realState->update();
 
@@ -60,13 +60,13 @@ class RealStateController extends Controller
     {
         $data = $request->all();
 
+        $images = $request->file('images');
         try {
 
             $realState = $this->realState->create($data);
 
-            if(isset($data['categories']) && count($data['categories'])){
-                $realState->categories()->sync($data['categories']);
-            }
+            $this->categories($data, $realState);
+            $this->images($images, $realState);
 
             return response()->json([
                 'data' => [
@@ -90,14 +90,15 @@ class RealStateController extends Controller
     public function update($id, RealStateRequest $request)
     {
         $data = $request->all();
+        $images = $request->file('images');
+
         try {
             $realState = $this->realState->findOrFail($id);
 
             $realState->update($data);
 
-            if(isset($data['categories']) && count($data['categories'])){
-                $realState->categories()->sync($data['categories']);
-            }
+            $this->categories($data, $realState);
+            $this->images($images, $realState);
 
             return response()->json([
                 'data' => [
@@ -131,6 +132,34 @@ class RealStateController extends Controller
                 [
                     'error' => $message->getMessage()
                 ], 500);
+        }
+    }
+
+    /**
+     * @param $images
+     * @param $realState
+     */
+    private function images($images, $realState): void
+    {
+        if ($images) {
+            $uploadedImages = [];
+            foreach ($images as $image) {
+                $path = $image->store('images', 'public');
+                $uploadedImages[] = ['photo' => $path, 'is_thumb' => false];
+            }
+
+            $realState->photos()->createMany($uploadedImages);
+        }
+    }
+
+    /**
+     * @param array $data
+     * @param $realState
+     */
+    private function categories(array $data, $realState): void
+    {
+        if (isset($data['categories']) && count($data['categories'])) {
+            $realState->categories()->sync($data['categories']);
         }
     }
 }

@@ -6,7 +6,7 @@ use App\Api\ApiMessages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -23,9 +23,7 @@ class UserController extends Controller
 
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -50,9 +48,20 @@ class UserController extends Controller
                 ], 401);
         }
 
+        Validator::make($data,[
+            'mobile_phone' => 'required',
+            'phone' => 'required'
+        ])->validate();
+
         try {
             $data['password'] = bcrypt($data['password']);
-            $this->user->create($data);
+            $user = $this->user->create($data);
+            $user->profile()->create(
+                [
+                    'phone' => $data['phone'],
+                    'mobile_phone' => $data['mobile_phone']
+                ]
+            );
 
             return response()->json([
                 'data' => [
@@ -75,9 +84,8 @@ class UserController extends Controller
     public function show($id)
     {
         try {
-            $user = $this->user->findOrFail($id);
-
-            $user->update();
+            $user = $this->user->with('profile')->findOrFail($id);
+            $user->profile->social_networks = unserialize($user->profile->social_networks);
 
             return response()->json([
                 'data' => $user
@@ -105,10 +113,19 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        try {
-            $user = $this->user->findOrFail($id);
+        Validator::make($data,[
+            'profile.mobile_phone' => 'required',
+            'profile.phone' => 'required',
+        ])->validate();
 
+        try {
+            $profile = $data['profile'];
+            $profile['social_networks'] = serialize($profile['social_networks']);
+
+            $user = $this->user->findOrFail($id);
             $user->update($data);
+
+            $user->profile()->update($profile);
 
             return response()->json([
                 'data' => [
