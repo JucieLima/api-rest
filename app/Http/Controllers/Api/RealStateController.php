@@ -28,15 +28,15 @@ class RealStateController extends Controller
      */
     public function index()
     {
-        $realState = $this->realState->paginate(10);
+        $realState = auth('api')->user()->realState();
 
-        return response()->json($realState);
+        return response()->json($realState->paginate(10));
     }
 
     public function show($id)
     {
         try {
-            $realState = $this->realState->with('photos')->findOrFail($id);
+            $realState = auth('api')->user()->realState()->with('photos')->findOrFail($id);
 
             $realState->update();
 
@@ -62,6 +62,7 @@ class RealStateController extends Controller
 
         $images = $request->file('images');
         try {
+            $data['user_id'] = auth()->user()->id;
 
             $realState = $this->realState->create($data);
 
@@ -93,7 +94,7 @@ class RealStateController extends Controller
         $images = $request->file('images');
 
         try {
-            $realState = $this->realState->findOrFail($id);
+            $realState = auth('api')->user()->realState()->findOrFail($id);
 
             $realState->update($data);
 
