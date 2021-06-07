@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\RealStatePhotoController;
 use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\RealStateSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,4 +39,5 @@ Route::prefix('v1')->group(function () {
         Route::get('refresh', [LoginController::class, 'refresh']);
     });
     Route::post('login', [LoginController::class, 'login']);
+    Route::get('search', [RealStateSearchController::class, 'index']);
 });
